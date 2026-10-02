@@ -1,0 +1,12 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="Cxpm.Cli/Cxpm.Cli.csproj" />
+  <Project Path="Cxpm.Core/Cxpm.Core.csproj" />
+  <Project Path="Cxpm.Tests/Cxpm.Tests.csproj" />
+  <Project Path="Cxpm.Web.Tests/Cxpm.Web.Tests.csproj" />
+  <Project Path="Cxpm.Web/Cxpm.Web.csproj" />
+</Solution>

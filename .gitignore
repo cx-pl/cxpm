@@ -1,0 +1,12 @@
+**/bin/
+**/obj/
+.dist/
+# Legacy package output directory used by earlier cxpm versions.
+dist/
+.packages/
+# Legacy restore directory used by pre-.packages versions of cxpm.
+packages/
+.vs/
+Cxpm.Web/App_Data/
+PLAN.md
+/Cxpm.Web/wwwroot

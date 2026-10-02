@@ -1,0 +1,6 @@
+@Cxpm.Web_HostAddress = http://localhost:5150
+
+GET {{Cxpm.Web_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
