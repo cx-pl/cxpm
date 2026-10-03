@@ -253,7 +253,7 @@ public sealed class PackageManager
 
     private static int FindDependencySection(IReadOnlyList<string> lines) =>
         Enumerable.Range(0, lines.Count).FirstOrDefault(index =>
-            Regex.IsMatch(lines[index], "^dependencies\\s*:") , -1);
+            Regex.IsMatch(lines[index], "^dependencies\\s*:"), -1);
 
     private static bool IsInlineDependencyList(string header) =>
         Regex.IsMatch(header, "^dependencies\\s*:\\s*\\[.*\\]\\s*(?:#.*)?$");

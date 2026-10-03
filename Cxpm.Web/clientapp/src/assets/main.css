@@ -157,7 +157,10 @@ h1 span {
   border-radius: 7px;
   font-size: 12px;
   font-weight: 700;
-  transition: transform 150ms ease, border-color 150ms ease, background 150ms ease;
+  transition:
+    transform 150ms ease,
+    border-color 150ms ease,
+    background 150ms ease;
 }
 
 .button:hover {

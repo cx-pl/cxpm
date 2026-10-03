@@ -23,7 +23,8 @@ onMounted(async () => {
     if (!response.ok) throw new Error(`HTTP ${response.status}`)
     const health = (await response.json()) as ApiHealth
     apiState.value = health.status === 'ok' ? 'online' : 'offline'
-    apiMessage.value = health.status === 'ok' ? 'Repository API is responding' : 'Repository API needs attention'
+    apiMessage.value =
+      health.status === 'ok' ? 'Repository API is responding' : 'Repository API needs attention'
   } catch {
     apiState.value = 'offline'
     apiMessage.value = 'Could not reach the repository API'
@@ -47,12 +48,16 @@ onMounted(async () => {
         <p class="eyebrow"><span class="eyebrow-line"></span> THE CX PACKAGE REPOSITORY</p>
         <h1>Packages that keep<br /><span>your CX projects moving.</span></h1>
         <p class="hero-description">
-          A home for CX packages, versions, and dependencies. Browse the catalog and
-          share reusable building blocks across the CX ecosystem.
+          A home for CX packages, versions, and dependencies. Browse the catalog and share reusable
+          building blocks across the CX ecosystem.
         </p>
         <div class="hero-actions">
-          <a class="button button-primary" href="#repository-status">Explore repository <span aria-hidden="true">↗</span></a>
-          <a class="button button-secondary" href="https://github.com/cx-pl">About CX <span aria-hidden="true">→</span></a>
+          <a class="button button-primary" href="#repository-status"
+            >Explore repository <span aria-hidden="true">↗</span></a
+          >
+          <a class="button button-secondary" href="https://github.com/cx-pl"
+            >About CX <span aria-hidden="true">→</span></a
+          >
         </div>
       </div>
 
@@ -102,9 +107,15 @@ onMounted(async () => {
       <p v-if="catalogMessage" class="catalog-message" aria-live="polite">{{ catalogMessage }}</p>
       <ul v-else class="package-list">
         <li v-for="item in packages" :key="item.id" class="package-row">
-          <RouterLink class="package-row-link" :to="{ name: 'package', params: { packageId: item.id } }">
+          <RouterLink
+            class="package-row-link"
+            :to="{ name: 'package', params: { packageId: item.id } }"
+          >
             <h3>{{ item.id }}</h3>
-            <span>{{ item.versions.length }} {{ item.versions.length === 1 ? 'version' : 'versions' }}</span>
+            <span
+              >{{ item.versions.length }}
+              {{ item.versions.length === 1 ? 'version' : 'versions' }}</span
+            >
           </RouterLink>
           <code>{{ item.versions.at(-1) }}</code>
         </li>

@@ -14,78 +14,78 @@ try
     switch (command)
     {
         case "init":
-        {
-            var directory = GetOption(values, "--directory") ?? Directory.GetCurrentDirectory();
-            var path = PackageManager.Initialize(directory, GetOption(values, "--name"));
-            Console.WriteLine($"Created {path}");
-            break;
-        }
+            {
+                var directory = GetOption(values, "--directory") ?? Directory.GetCurrentDirectory();
+                var path = PackageManager.Initialize(directory, GetOption(values, "--name"));
+                Console.WriteLine($"Created {path}");
+                break;
+            }
         case "build":
-        {
-            var archive = PackageManager.Build(GetOption(values, "--project") ?? Directory.GetCurrentDirectory());
-            Console.WriteLine($"Packed {archive}");
-            break;
-        }
+            {
+                var archive = PackageManager.Build(GetOption(values, "--project") ?? Directory.GetCurrentDirectory());
+                Console.WriteLine($"Packed {archive}");
+                break;
+            }
         case "publish":
-        {
-            var project = GetOption(values, "--project") ?? Directory.GetCurrentDirectory();
-            var repository = PackageManager.ResolvePublishFeed(project, GetOption(values, "--feed"));
-            var destination = PackageManager.Publish(project, repository);
-            Console.WriteLine($"Published {destination}");
-            break;
-        }
+            {
+                var project = GetOption(values, "--project") ?? Directory.GetCurrentDirectory();
+                var repository = PackageManager.ResolvePublishFeed(project, GetOption(values, "--feed"));
+                var destination = PackageManager.Publish(project, repository);
+                Console.WriteLine($"Published {destination}");
+                break;
+            }
         case "add":
-        {
-            var dependency = values.FirstOrDefault(value => !value.StartsWith("-", StringComparison.Ordinal))
-                ?? throw new CxpmException("Usage: cxpm add <package-id@range> [--project <path>]");
-            var project = GetOption(values, "--project") ?? Directory.GetCurrentDirectory();
-            PackageManager.AddDependency(project, dependency);
-            Console.WriteLine($"Added {dependency} to {project}");
-            Console.WriteLine("Run 'cxpm restore' to resolve packages, or pass --feed <path-or-url> to select a feed.");
-            break;
-        }
+            {
+                var dependency = values.FirstOrDefault(value => !value.StartsWith("-", StringComparison.Ordinal))
+                    ?? throw new CxpmException("Usage: cxpm add <package-id@range> [--project <path>]");
+                var project = GetOption(values, "--project") ?? Directory.GetCurrentDirectory();
+                PackageManager.AddDependency(project, dependency);
+                Console.WriteLine($"Added {dependency} to {project}");
+                Console.WriteLine("Run 'cxpm restore' to resolve packages, or pass --feed <path-or-url> to select a feed.");
+                break;
+            }
         case "remove":
-        {
-            var packageId = values.FirstOrDefault(value => !value.StartsWith("-", StringComparison.Ordinal))
-                ?? throw new CxpmException("Usage: cxpm remove <package-id> [--project <path>]");
-            var project = GetOption(values, "--project") ?? Directory.GetCurrentDirectory();
-            PackageManager.RemoveDependency(project, packageId);
-            Console.WriteLine($"Removed {packageId} from {project}");
-            Console.WriteLine("Run 'cxpm restore' to update the resolved dependency graph.");
-            break;
-        }
+            {
+                var packageId = values.FirstOrDefault(value => !value.StartsWith("-", StringComparison.Ordinal))
+                    ?? throw new CxpmException("Usage: cxpm remove <package-id> [--project <path>]");
+                var project = GetOption(values, "--project") ?? Directory.GetCurrentDirectory();
+                PackageManager.RemoveDependency(project, packageId);
+                Console.WriteLine($"Removed {packageId} from {project}");
+                Console.WriteLine("Run 'cxpm restore' to update the resolved dependency graph.");
+                break;
+            }
         case "restore":
         case "update":
-        {
-            var project = GetOption(values, "--project") ?? Directory.GetCurrentDirectory();
-            var feeds = PackageManager.ResolveFeeds(project, GetOption(values, "--feed"));
-            var target = GetOption(values, "--target");
-            var locked = values.Contains("--locked", StringComparer.Ordinal);
-            var result = PackageManager.Restore(project, feeds, update: command == "update",
-                runtimeIdentifier: target, locked: locked);
-            Console.WriteLine($"Restored {result.PackageCount} package(s) to {result.PackagesDirectory}" +
-                (result.UsedLockFile ? " using cxpm.lock" : "; updated cxpm.lock") +
-                $" for RID(s) {string.Join(", ", result.RuntimeIdentifiers)}.");
-            break;
-        }
+            {
+                var project = GetOption(values, "--project") ?? Directory.GetCurrentDirectory();
+                var feeds = PackageManager.ResolveFeeds(project, GetOption(values, "--feed"));
+                var target = GetOption(values, "--target");
+                var locked = values.Contains("--locked", StringComparer.Ordinal);
+                var result = PackageManager.Restore(project, feeds, update: command == "update",
+                    runtimeIdentifier: target, locked: locked);
+                Console.WriteLine($"Restored {result.PackageCount} package(s) to {result.PackagesDirectory}" +
+                    (result.UsedLockFile ? " using cxpm.lock" : "; updated cxpm.lock") +
+                    $" for RID(s) {string.Join(", ", result.RuntimeIdentifiers)}.");
+                break;
+            }
         case "list":
-        {
-            var project = GetOption(values, "--project") ?? Directory.GetCurrentDirectory();
-            var items = PackageManager.List(project);
-            if (items.Count == 0)
-                Console.WriteLine("No package dependencies.");
-            else
-                foreach (var item in items)
-                    Console.WriteLine(item);
-            break;
-        }
+            {
+                var project = GetOption(values, "--project") ?? Directory.GetCurrentDirectory();
+                var items = PackageManager.List(project);
+                if (items.Count == 0)
+                    Console.WriteLine("No package dependencies.");
+                else
+                    foreach (var item in items)
+                        Console.WriteLine(item);
+                break;
+            }
         case "clean":
-        {
-            var project = GetOption(values, "--project") ?? Directory.GetCurrentDirectory();
-            PackageManager.Clean(project);
-            Console.WriteLine("Removed restored packages tracked by cxpm.lock.");
-            break;
-        }
+            {
+                var project = GetOption(values, "--project") ?? Directory.GetCurrentDirectory();
+                PackageManager.Clean(project);
+                Console.WriteLine("Removed restored packages tracked by cxpm.lock.");
+                break;
+            }
         default:
             throw new CxpmException($"Unknown command '{command}'. Run 'cxpm --help' for usage.");
     }

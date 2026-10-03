@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 namespace Cxpm.Core.Models;
 
 internal sealed record PackageDependency(
-    string Id, 
+    string Id,
     string RangeText)
 {
     private static readonly Regex PackageIdPattern = new("^[A-Za-z0-9][A-Za-z0-9._-]*$", RegexOptions.Compiled);
