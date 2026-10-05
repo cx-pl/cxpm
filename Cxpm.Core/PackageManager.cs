@@ -67,7 +67,7 @@ public sealed class PackageManager
         if (File.Exists(path))
             throw new CxpmException($"'{path}' already exists.");
         File.WriteAllText(path,
-            $"name: {name}\nversion: 0.1.0\ntargets: []\nfeeds: []\npackage:\n  sources: []\n  binary: []\ndependencies: []\n");
+            $"name: {name}\nversion: 0.1.0\ntargets: []\nfeeds: []\ndependencies: []\n");
         return path;
     }
 
