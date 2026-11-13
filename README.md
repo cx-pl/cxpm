@@ -11,13 +11,13 @@ From this directory:
 ```powershell
 dotnet build Cxpm.slnx
 dotnet test Cxpm.slnx
-dotnet run --project Cxpm.Cli -- --help
-Set-Location Cxpm.Web/clientapp; pnpm install --frozen-lockfile; pnpm run build; Set-Location ../..
-dotnet run --project Cxpm.Web
+dotnet run --project src/Cxpm.Cli -- --help
+Set-Location src/Cxpm.Web/clientapp; pnpm install --frozen-lockfile; pnpm run build; Set-Location ../../..
+dotnet run --project src/Cxpm.Web
 ```
 
 `Cxpm.Web` serves the Vue single-page app at `/` and exposes Minimal API routes
-under `/api`. See [Cxpm.Web/README.md](Cxpm.Web/README.md) for frontend setup
+under `/api`. See [Cxpm.Web/README.md](src/Cxpm.Web/README.md) for frontend setup
 and build instructions. Its file-backed feed can be used as the HTTP repository
 URL `http://localhost:5150/api`. Package reads are public; set `CXPM_TOKEN` on
 the server and as the client environment variable to publish packages.
@@ -32,6 +32,10 @@ Create a package project:
 ```powershell
 cxpm init --directory . --name cxhello
 ```
+
+Project and package names must not contain underscores. This is checked by
+`cxpm init` (including names inferred from directory names), when reading project
+manifests, and by the compiler. Use a name such as `MyProject` or `cxhello`.
 
 Edit `cxhello.cxproj` to describe package files. For example:
 
@@ -104,6 +108,14 @@ graph.
 
 ## Current boundaries
 
+The `PackageManager` API is implemented in partial class files grouped by
+responsibility: `PackageManager.cs` coordinates operations,
+`PackageManager.Archives.cs` builds and extracts packages,
+`PackageManager.Repositories.cs` implements local and HTTP feeds,
+`PackageManager.DependencyResolution.cs` resolves graphs and manages lock files,
+and `PackageManager.ProjectEditing.cs` edits dependency declarations while
+preserving project-file comments.
+
 - One or more feeds are supported per project. Local folders and static
   HTTP(S) feeds use the same package-ID/version archive layout. HTTP feeds expose
   `GET {feed}/{lowercase-id}/index.json` with `{"versions":["1.2.3"]}` and
@@ -134,6 +146,44 @@ graph.
   enforce the same compressed-size cap.
 - When dependencies change, restore removes obsolete package versions that were
   recorded by the previous lock file. Untracked content under `.packages/` is kept.
-- Restored CX sources are visible to the current compiler's recursive scan.
-  `targets` is now part of the compiler project model. Native toolchain builds,
-  dependency binary linking, and package assets are not implemented yet.
+- The compiler reads explicit package dependencies through matching `cxpm.lock`
+  manifests and generates separate module targets; `.packages` is excluded from
+  the application's ordinary source scan.
+
+## Native requirements
+
+`native_libraries` records logical C library dependencies separately from CX package
+IDs. Each entry has Windows/Linux settings, `provider` (os/sdk/package) and
+`visibility` (public/private). Target settings support architectures/toolchains,
+ordered headers, include_directories, definitions, link_libraries, sdk_root,
+cmake_package/imported_targets, pkg_config, version, linkage (static/shared),
+runtime_artifacts and runtime_search_paths. Restoration rejects unsupported native
+targets and retains this structured manifest in `package.cxpm`.
+
+```yaml
+native_libraries:
+  driver:
+    provider: sdk
+    visibility: public
+    linux:
+      architectures: [x64]
+      pkg_config: libmongoc-1.0
+      version: '1.21'
+      headers: [mongoc/mongoc.h, bson/bson.h]
+```
+
+Native binaries supplied by packages use the existing `package.binary` RID payloads
+and need CX declarations in `package.sources`. Project asset paths under binary/RID
+map to restored bin/RID; other relative assets map to source/. `{arch}` expands in
+native asset paths from the selected CMake target. Public native requirements and
+runtime artifacts propagate to the consuming target/output directory. SDK CMake
+targets and pkg-config preserve native transitive requirements. Runtime loading is
+explicit through NativeLibrary; OS/SDK prerequisites must be installed separately.
+Arbitrary precompiled CX modules without declarations remain unsupported.
+
+The package-consuming runners and four initial SDK bindings are in
+`../examples/native-bindings`; their README lists prerequisites and ownership rules.
+
+### Source manifests and native source packages
+
+Project-directory commands also discover a single `src/*.cxproj` when the root has no manifest. Manifest-relative outputs and dependency paths remain beside that manifest. A manifest in `src/` may set `package.root: ..` to select sources from its repository root (for example `src/**/*.cx`, `native/**/*.c`, and `include/**/*.h`). The default is `.`. Other roots are rejected; individual selection patterns still cannot contain `..`. Binary inputs remain manifest-relative. Restored archives preserve the selected tree beneath `source/`.

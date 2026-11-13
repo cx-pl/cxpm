@@ -1,20 +1,20 @@
 FROM node:24-alpine AS frontend-build
 WORKDIR /src/Cxpm.Web/clientapp
 RUN corepack enable
-COPY Cxpm.Web/clientapp/package.json Cxpm.Web/clientapp/pnpm-lock.yaml ./
+COPY src/Cxpm.Web/clientapp/package.json src/Cxpm.Web/clientapp/pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
-COPY Cxpm.Web/clientapp/ ./
+COPY src/Cxpm.Web/clientapp/ ./
 RUN pnpm run build
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS backend-build
 WORKDIR /src
 COPY NuGet.config ./
 COPY Cxpm.slnx ./
-COPY Cxpm.Core/Cxpm.Core.csproj Cxpm.Core/
-COPY Cxpm.Web/Cxpm.Web.csproj Cxpm.Web/
+COPY src/Cxpm.Core/Cxpm.Core.csproj Cxpm.Core/
+COPY src/Cxpm.Web/Cxpm.Web.csproj Cxpm.Web/
 RUN dotnet restore Cxpm.Web/Cxpm.Web.csproj --configfile NuGet.config
-COPY Cxpm.Core/ Cxpm.Core/
-COPY Cxpm.Web/ Cxpm.Web/
+COPY src/Cxpm.Core/ Cxpm.Core/
+COPY src/Cxpm.Web/ Cxpm.Web/
 COPY --from=frontend-build /src/Cxpm.Web/wwwroot/ Cxpm.Web/wwwroot/
 RUN dotnet publish Cxpm.Web/Cxpm.Web.csproj --configuration Release --no-restore --output /app/publish
 

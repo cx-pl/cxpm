@@ -87,5 +87,5 @@ pnpm run build
 ```
 
 The generated static assets are written to `Cxpm.Web/wwwroot/`. Run the web
-project with `dotnet run --project Cxpm.Web` to serve the SPA and API from the
+project with `dotnet run --project src/Cxpm.Web` to serve the SPA and API from the
 same origin.

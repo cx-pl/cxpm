@@ -2,7 +2,7 @@ services:
   cxpm-web:
     build:
       context: .
-      dockerfile: Cxpm.Web/Dockerfile
+      dockerfile: src/Cxpm.Web/Dockerfile
     ports:
       - "8181:8080"
     environment:

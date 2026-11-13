@@ -8,6 +8,67 @@ namespace Cxpm.Tests;
 
 public sealed class PackageManagerTests
 {
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void InitRejectsExplicitAndInferredNamesWithUnderscores(bool explicitName)
+    {
+        var root = Directory.CreateTempSubdirectory("cxpm-project-name-").FullName;
+        try
+        {
+            var destination = Path.Combine(root, explicitName ? "valid" : "bad_name");
+            var error = Assert.Throws<CxpmException>(() =>
+                PackageManager.Initialize(destination, explicitName ? "bad_name" : null));
+            Assert.Contains("underscores", error.Message);
+            Assert.False(Directory.Exists(destination));
+        }
+        finally { Directory.Delete(root, recursive: true); }
+    }
+
+    [Fact]
+    public void NativeRequirementsSurviveArchiveAndLockedRestoreAndRejectUnsupportedRid()
+    {
+        var root = Directory.CreateTempSubdirectory("cxpm-native-test-").FullName;
+        try
+        {
+            var packageDirectory = Path.Combine(root, "library");
+            var consumerDirectory = Path.Combine(root, "consumer");
+            var feed = Path.Combine(root, "feed");
+            Directory.CreateDirectory(packageDirectory);
+            File.WriteAllText(Path.Combine(packageDirectory, "library.cxproj"), """
+                name: nativebinding
+                version: 1.0.0
+                type: Library
+                targets: [linux-x64]
+                package:
+                  sources: ['*.cx']
+                native_libraries:
+                  x11:
+                    provider: sdk
+                    linux:
+                      architectures: [x64]
+                      pkg_config: x11
+                      runtime_artifacts: [binary/linux-x64/libbinding.so]
+                """);
+            File.WriteAllText(Path.Combine(packageDirectory, "api.cx"), "public extern int Native();");
+            PackageManager.Publish(packageDirectory, feed);
+            Directory.CreateDirectory(consumerDirectory);
+            File.WriteAllText(Path.Combine(consumerDirectory, "consumer.cxproj"), """
+                name: consumer
+                version: 1.0.0
+                dependencies: ['nativebinding@1.0.0']
+                """);
+            PackageManager.Restore(consumerDirectory, feed, runtimeIdentifier: "linux-x64");
+            Assert.True(PackageManager.Restore(consumerDirectory, feed, runtimeIdentifier: "linux-x64", locked: true).UsedLockFile);
+            var manifest = File.ReadAllText(Path.Combine(consumerDirectory, ".packages", "nativebinding", "1.0.0", "package.cxpm"));
+            Assert.Contains("pkg_config: x11", manifest);
+            Assert.Contains("runtime_artifacts", manifest);
+            Assert.Contains("does not support", Assert.Throws<CxpmException>(() =>
+                PackageManager.Restore(consumerDirectory, feed, runtimeIdentifier: "win-x64")).Message);
+        }
+        finally { Directory.Delete(root, recursive: true); }
+    }
+
     [Fact]
     public void PublishRejectsOverwritingAnExistingPackageVersion()
     {

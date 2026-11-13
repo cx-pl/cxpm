@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Cxpm.Core\Cxpm.Core.csproj" />
+    <ProjectReference Include="..\..\src\Cxpm.Core\Cxpm.Core.csproj" />
   </ItemGroup>
 
 </Project>

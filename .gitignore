@@ -10,3 +10,10 @@ packages/
 Cxpm.Web/App_Data/
 PLAN.md
 /Cxpm.Web/wwwroot
+
+**/.obj/
+**/.bin/
+**/.dist/
+**/.packages/
+.build/
+**/.build-*/

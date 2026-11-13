@@ -26,7 +26,7 @@ public sealed class RepositoryApiContainerTests : IAsyncLifetime
     public async Task InitializeAsync()
     {
         var repositoryRoot = FindRepositoryRoot();
-        await RunDockerAsync(repositoryRoot, "build", "--tag", _imageName, "--file", "Cxpm.Web/Dockerfile", ".");
+        await RunDockerAsync(repositoryRoot, "build", "--tag", _imageName, "--file", "src/Cxpm.Web/Dockerfile", ".");
         _container = new ContainerBuilder(_imageName)
             .WithPortBinding(ContainerPort, assignRandomHostPort: true)
             .WithEnvironment("ASPNETCORE_HTTP_PORTS", ContainerPort.ToString())
@@ -167,7 +167,7 @@ public sealed class RepositoryApiContainerTests : IAsyncLifetime
     {
         for (var directory = new DirectoryInfo(AppContext.BaseDirectory); directory is not null; directory = directory.Parent)
             if (File.Exists(Path.Combine(directory.FullName, "Cxpm.slnx"))
-                && File.Exists(Path.Combine(directory.FullName, "Cxpm.Web", "Dockerfile")))
+                && File.Exists(Path.Combine(directory.FullName, "src", "Cxpm.Web", "Dockerfile")))
                 return directory.FullName;
         throw new DirectoryNotFoundException("Could not locate Cxpm.slnx from the test output directory.");
     }

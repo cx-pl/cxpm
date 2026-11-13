@@ -4,9 +4,9 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="Cxpm.Cli/Cxpm.Cli.csproj" />
-  <Project Path="Cxpm.Core/Cxpm.Core.csproj" />
-  <Project Path="Cxpm.Tests/Cxpm.Tests.csproj" />
-  <Project Path="Cxpm.Web.Tests/Cxpm.Web.Tests.csproj" />
-  <Project Path="Cxpm.Web/Cxpm.Web.csproj" />
+  <Project Path="src/Cxpm.Cli/Cxpm.Cli.csproj" />
+  <Project Path="src/Cxpm.Core/Cxpm.Core.csproj" />
+  <Project Path="tests/Cxpm.Tests/Cxpm.Tests.csproj" />
+  <Project Path="tests/Cxpm.Web.Tests/Cxpm.Web.Tests.csproj" />
+  <Project Path="src/Cxpm.Web/Cxpm.Web.csproj" />
 </Solution>

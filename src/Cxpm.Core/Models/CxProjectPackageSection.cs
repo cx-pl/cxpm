@@ -2,6 +2,7 @@ namespace Cxpm.Core.Models;
 
 internal sealed class CxProjectPackageSection
 {
+    public string Root { get; set; } = ".";
     public List<string> Sources { get; set; } = [];
     public List<string> Binary { get; set; } = [];
     // Kept only to give an actionable error for this deferred manifest field.
